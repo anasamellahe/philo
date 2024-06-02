@@ -9,7 +9,7 @@ int ft_atoi(char *str)
 	i = 0;
 	a = 0;
 	sign = 1;
-	while (str && (str[i] >=  9 && str[i] <= 13) || str[i] == 32) 
+	while (str && ((str[i] >=  9 && str[i] <= 13) || str[i] == 32)) 
 		i++;
 	while (str && (str[i] == '-' || str[i] == '+') && str[i])
 	{
@@ -32,17 +32,101 @@ void set_data(char **av, t_data *data)
 	if (av[5] != NULL)
 		data->n_t_e = ft_atoi(av[5]);
 	else
-		data->n_t_e = -1;
+		data->n_t_e = 0;
+}
+t_philo *creat_philo(t_data *data)
+{
+	t_philo *philo;
+	int i;
+
+	i = 0;
+	philo = (t_philo *)malloc(sizeof(t_philo) * data->n_o_p);
+	while (i < data->n_o_p)
+	{
+		philo[i].index = i;
+		philo[i].eat_time = 0;
+		philo[i].data = data;
+		philo[i].last_eat = 0;
+		pthread_mutex_init(&philo[i].fork_l, NULL);
+		i++;
+	}
+	i = 0;
+	while (i < data->n_o_p)
+	{
+		philo[i].fork_r = &philo[(i + 1) * (i + 1 < data->n_o_p)].fork_l;
+		i++;
+	}
+	return (philo);
+}
+void sleep_fun(t_philo *philo)
+{
+	printf("philo %d is sleeping\n", philo->index);
+	usleep(philo->data->t_o_s);
+}
+// int die_func(t_philo *philo)
+// {
+// 	if (philo->eat_time == philo->data->n_t_e)
+// 	{
+// 		printf("philo %d die\n", philo->index);
+// 		exit(1);
+// 	}
+// 	return (0);
+// }
+void think_fun(t_philo *philo)
+{
+	printf("philo %d is thinking\n", philo->index);
+}
+void *print_message(void *arg)
+{
+	t_philo *philo = (t_philo *)arg;
+	while (1)
+	{
+		pthread_mutex_lock(&philo->fork_l);
+		printf("philo %d take a fork_l\n", philo->index);
+		pthread_mutex_lock(philo->fork_r);
+		printf("philo %d take a fork_r\n", philo->index);
+		printf("-------------------------\n");
+		printf("philo %d eat\n", philo->index);
+		printf("-------------------------\n");
+		usleep(philo->data->t_o_e);
+		pthread_mutex_unlock(&philo->fork_l);
+		printf("philo %d unlock  a fork_l\n", philo->index);
+		pthread_mutex_unlock(philo->fork_r);
+		printf("philo %d unlock  a fork_r\n", philo->index);
+		sleep_fun(philo);
+		think_fun(arg);
+	}
+}
+void creat_thread(t_philo *philo)
+{
+	int i;
+
+	i = 0;
+	while (i < philo->data->n_o_p)
+	{
+		if (i  % 2 != 0)
+			usleep(100);
+		pthread_create(&philo[i].tid, NULL, print_message, &philo[i]);
+		i++;
+	}
+	i = 0;
+	while (i < philo->data->n_o_p)
+	{
+		pthread_join(philo[i].tid, NULL);
+		i++;
+	}
 }
 int main (int ac, char **av)
 {
 	t_data data;
+	t_philo *philo;
 
 	printf("ac == %d\n", ac);
     if (ac >= 5 && ac < 7)
     {
         set_data(av, &data);
-		printf("%d %d %d %d %d \n", data.n_o_p, data.t_o_d, data.t_o_e, data.t_o_s, data.n_t_e);
+		philo = creat_philo(&data);
+		creat_thread(philo);
     }
     else
         return (1);

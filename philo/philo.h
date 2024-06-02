@@ -18,13 +18,12 @@ typedef struct s_data
 
 typedef struct s_philo
 {
-    pthread_t id;
-    pthread_mutex_t fork;
+    pthread_t tid;
+    pthread_mutex_t fork_l;
+    pthread_mutex_t *fork_r;
+    t_data *data;
     int index;
     int eat_time;
-    int sleep;
-    int eat;
-    int think;
-    t_data *data;
+    int last_eat;
 }   t_philo;
 #endif
