@@ -60,10 +60,19 @@ t_philo *creat_philo(t_data *data)
 	}
 	return (philo);
 }
+
+long int get_time(t_data *data)
+{
+	struct timeval time;
+
+	gettimeofday(&time, NULL);
+	//printf("sleep == %ld %ld\n", (time.tv_sec * 1000 + time.tv_usec / 1000) , data->time_line);
+	return ((time.tv_sec * 1000 + time.tv_usec / 1000) - data->time_line);
+}
 void sleep_fun(t_philo *philo)
 {
-	printf("philo %d is sleeping\n", philo->index);
-	usleep(philo->data->t_o_s);
+	printf("%ld %d is sleeping\n", get_time(philo->data), philo->index);
+	usleep(philo->data->t_o_s * 1000);
 }
 // int die_func(t_philo *philo)
 // {
@@ -76,7 +85,7 @@ void sleep_fun(t_philo *philo)
 // }
 void think_fun(t_philo *philo)
 {
-	printf("philo %d is thinking\n", philo->index);
+	printf("%ld %d is thinking\n", get_time(philo->data), philo->index);
 }
 void *print_message(void *arg)
 {
@@ -88,18 +97,14 @@ void *print_message(void *arg)
 		if (philo->eat_time == philo->data->n_t_e)
 			return (0);
 		pthread_mutex_lock(&philo->fork_l);
-		printf("philo %d take a fork_l\n", philo->index);q
+		printf("%ld %d has taken a fork\n", get_time(philo->data), philo->index);
 		pthread_mutex_lock(philo->fork_r);
-		printf("philo %d take a fork_r\n", philo->index);
-		printf("-------------------------\n");
-		printf("philo %d eat\n", philo->index);
-		printf("-------------------------\n");
-		usleep(philo->data->t_o_e);
+		printf("%ld %d has taken a fork\n", get_time(philo->data), philo->index);
+		printf("%ld %d is eating\n", get_time(philo->data), philo->index);
+		usleep(philo->data->t_o_e * 1000);
 		philo->eat_time ++;
 		pthread_mutex_unlock(&philo->fork_l);
-		printf("philo %d unlock  a fork_l\n", philo->index);
 		pthread_mutex_unlock(philo->fork_r);
-		printf("philo %d unlock  a fork_r\n", philo->index);
 		sleep_fun(philo);
 		think_fun(arg);
 	}

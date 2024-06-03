@@ -10,13 +10,13 @@
 
 typedef struct s_data
 {
-    int n_o_p;
-    int t_o_d;
-    int t_o_e;
-    int t_o_s;
-    int n_t_e;
-    long time_line;
-    struct timeval time;
+    int             n_o_p;
+    int             t_o_d;
+    int             t_o_e;
+    int             t_o_s;
+    int             n_t_e;
+    long int        time_line;
+    struct timeval  time;
 }   t_data;
 
 typedef struct s_philo
