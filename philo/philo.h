@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 
 typedef struct s_data
 {
@@ -14,6 +15,8 @@ typedef struct s_data
     int t_o_e;
     int t_o_s;
     int n_t_e;
+    long time_line;
+    struct timeval time;
 }   t_data;
 
 typedef struct s_philo

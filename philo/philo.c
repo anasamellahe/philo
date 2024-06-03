@@ -29,10 +29,12 @@ void set_data(char **av, t_data *data)
 	data->t_o_d = ft_atoi(av[2]);
 	data->t_o_e = ft_atoi(av[3]);
 	data->t_o_s = ft_atoi(av[4]);
+	gettimeofday(&data->time, NULL);
+	data->time_line = data->time.tv_sec * 1000 + data->time.tv_usec / 1000;
 	if (av[5] != NULL)
 		data->n_t_e = ft_atoi(av[5]);
 	else
-		data->n_t_e = 0;
+		data->n_t_e = -1;
 }
 t_philo *creat_philo(t_data *data)
 {
@@ -79,16 +81,21 @@ void think_fun(t_philo *philo)
 void *print_message(void *arg)
 {
 	t_philo *philo = (t_philo *)arg;
+	long long time;
+
 	while (1)
 	{
+		if (philo->eat_time == philo->data->n_t_e)
+			return (0);
 		pthread_mutex_lock(&philo->fork_l);
-		printf("philo %d take a fork_l\n", philo->index);
+		printf("philo %d take a fork_l\n", philo->index);q
 		pthread_mutex_lock(philo->fork_r);
 		printf("philo %d take a fork_r\n", philo->index);
 		printf("-------------------------\n");
 		printf("philo %d eat\n", philo->index);
 		printf("-------------------------\n");
 		usleep(philo->data->t_o_e);
+		philo->eat_time ++;
 		pthread_mutex_unlock(&philo->fork_l);
 		printf("philo %d unlock  a fork_l\n", philo->index);
 		pthread_mutex_unlock(philo->fork_r);
