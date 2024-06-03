@@ -40,10 +40,10 @@ void *print_message(void *arg)
 	t_arg *args = (t_arg *)arg;
 	while (1)
 	{
-		pthread_mutex_lock(&args->fork_l);
-		printf("philo %d take a fork_l\n", args->id);
-		pthread_mutex_lock(args->fork_r);
-		printf("philo %d take a fork_r\n", args->id);
+		while (pthread_mutex_lock(&args->fork_l))
+			printf("philo %d take a fork_l\n", args->id);
+		while (pthread_mutex_lock(args->fork_r))
+			printf("philo %d take a fork_r\n", args->id);
 		printf("-------------------------\n");
 		printf("philo %d eat\n", args->id);
 		printf("-------------------------\n");
@@ -67,23 +67,21 @@ int main(int ac, char **av)
 	arg2.id = 1;
 	arg3.id = 2;
 	arg4.id = 3;
-
 	pthread_mutex_init(&arg1.fork_l, NULL);
 	pthread_mutex_init(&arg2.fork_l, NULL);
 	pthread_mutex_init(&arg3.fork_l, NULL);
-	//pthread_mutex_init(&arg4.fork_l, NULL);
+	pthread_mutex_init(&arg4.fork_l, NULL);
 
 
 	arg1.fork_r = &arg2.fork_l;
 	arg2.fork_r = &arg3.fork_l;
-	arg3.fork_r = &arg1.fork_l;
-	//arg4.fork_r = &arg1.fork_l;
+	arg3.fork_r = &arg4.fork_l;
+	arg4.fork_r = &arg1.fork_l;
 
 	pthread_create(&arg1.tid, NULL, print_message, &arg1);
 	pthread_create(&arg3.tid, NULL, print_message, &arg2);
-	usleep(800);
 	pthread_create(&arg2.tid, NULL, print_message, &arg3);
-	//pthread_create(&arg4.tid, NULL, print_message, &arg4);
+	pthread_create(&arg4.tid, NULL, print_message, &arg4);
 
 	pthread_join(arg1.tid, NULL);
 	pthread_join(arg2.tid, NULL);

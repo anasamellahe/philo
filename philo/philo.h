@@ -27,6 +27,6 @@ typedef struct s_philo
     t_data *data;
     int index;
     int eat_time;
-    int last_eat;
+    long int last_eat;
 }   t_philo;
 #endif

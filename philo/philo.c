@@ -48,7 +48,7 @@ t_philo *creat_philo(t_data *data)
 		philo[i].index = i;
 		philo[i].eat_time = 0;
 		philo[i].data = data;
-		philo[i].last_eat = 0;
+		philo[i].last_eat = -1;
 		pthread_mutex_init(&philo[i].fork_l, NULL);
 		i++;
 	}
@@ -74,18 +74,31 @@ void sleep_fun(t_philo *philo)
 	printf("%ld %d is sleeping\n", get_time(philo->data), philo->index);
 	usleep(philo->data->t_o_s * 1000);
 }
-// int die_func(t_philo *philo)
-// {
-// 	if (philo->eat_time == philo->data->n_t_e)
-// 	{
-// 		printf("philo %d die\n", philo->index);
-// 		exit(1);
-// 	}
-// 	return (0);
-// }
+int die_func(t_philo *philo)
+{
+	struct timeval time;
+
+	printf("index == %d last eat == %ld\n", philo->index , philo->last_eat);
+	gettimeofday(&time, NULL);
+	if (philo->last_eat == -1)
+		return (0);
+	if ((time.tv_sec * 1000 + time.tv_usec / 1000) - philo->last_eat  >= philo->data->t_o_d)
+	{
+		printf("%ld %d is dead\n", get_time(philo->data), philo->index);
+		exit(1);
+	}
+	return (0);
+}
 void think_fun(t_philo *philo)
 {
 	printf("%ld %d is thinking\n", get_time(philo->data), philo->index);
+}
+void get_last_eat(t_philo *philo)
+{
+	struct timeval time;
+
+	gettimeofday(&time, NULL);
+	philo->last_eat = time.tv_sec * 1000 + time.tv_usec / 1000;
 }
 void *print_message(void *arg)
 {
@@ -96,13 +109,17 @@ void *print_message(void *arg)
 	{
 		if (philo->eat_time == philo->data->n_t_e)
 			return (0);
+		die_func(philo);
 		pthread_mutex_lock(&philo->fork_l);
+		die_func(philo);
 		printf("%ld %d has taken a fork\n", get_time(philo->data), philo->index);
 		pthread_mutex_lock(philo->fork_r);
+		die_func(philo);
 		printf("%ld %d has taken a fork\n", get_time(philo->data), philo->index);
 		printf("%ld %d is eating\n", get_time(philo->data), philo->index);
 		usleep(philo->data->t_o_e * 1000);
 		philo->eat_time ++;
+		get_last_eat(philo);
 		pthread_mutex_unlock(&philo->fork_l);
 		pthread_mutex_unlock(philo->fork_r);
 		sleep_fun(philo);
