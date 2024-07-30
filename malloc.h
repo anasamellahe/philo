@@ -1,5 +1,5 @@
-#ifndef MALLOC_H
-# define MALLOC_H
+#ifndef FT_MALLOC_H
+# define FT_MALLOC_H
 
 # include <unistd.h>
 # include <stdlib.h>

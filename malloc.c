@@ -58,5 +58,5 @@ void	ft_free_malloc(t_malloc *data)
 		data = data->next;
 		free(tmp);
 	}
-	exit(1);
+	exit(2);
 }
