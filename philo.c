@@ -22,8 +22,8 @@ void init_philo(t_data *data)
 	{
 		data->philos[i].id = i;
 		data->philos[i].last_eat_time = get_current_time();
-		// if (data->philos[i].last_eat_time != 0)
-		// 	ft_free_malloc(data->safe_malloc);
+		if (data->philos[i].last_eat_time == 0)
+			ft_free_malloc(data->safe_malloc);
 		data->philos[i].number_of_meals = data->number_of_meals;
 		data->philos[i].data = data;
 		data->philos[i].die_flag = 0;
@@ -57,11 +57,10 @@ void *monitoring(void *arg)
 	{
 		while (i < data->num_of_philo)
 		{
-			printf("monitoring\n");
 			if ((data->philos[i].last_eat_time - get_current_time()) > data->time_to_die)
 			{
-				data->flag = 1;
-				data->philos[i].die_flag = 1;
+				// data->flag = 1;
+				// data->philos[i].die_flag = 1;
 			}
 			i++;
 		}
@@ -79,7 +78,7 @@ void *routine(void *arg)
 
 	philo = arg;
 	data = philo->data;
-	while (philo->die_flag == 0)
+	while (data->flag == 0)
 	{
 		min = get_min(philo->id, (philo->id + 1) % data->num_of_philo);
 		max = get_max(philo->id, (philo->id + 1) % data->num_of_philo);
@@ -100,7 +99,7 @@ void	start_thread(t_data *data)
 	int	i;
 
 	i = 0;
-	if (pthread_create(&data->monitor_id, NULL, monitoring, &data) != 0)
+	if (pthread_create(&data->monitor_id, NULL, monitoring, data) != 0)
 		ft_free_malloc(data->safe_malloc);
 	while(i < data->num_of_philo)
 	{
@@ -109,7 +108,6 @@ void	start_thread(t_data *data)
 			ft_free_malloc(data->safe_malloc);
 		i++;
 	}
-	printf("hello after create\n");
 	i = 0;
 	while(i < data->num_of_philo)
 	{

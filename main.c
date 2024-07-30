@@ -13,10 +13,12 @@ t_data *set_data(char **av, int ac)
 	if (ac == 6)
 		data->number_of_meals = ft_atol(av[5]);
 	else
-		data->number_of_meals = -1;
+		data->number_of_meals = 0;
 	data->safe_malloc = safe_malloc;
 	data->flag = 0;
 	data->timestamp = get_current_time();
+	if (pthread_mutex_init(&data->data_lock, NULL))
+		ft_free_malloc(data->safe_malloc);
 	return (data);
 }
 // void print_data(t_data *data)
@@ -39,6 +41,7 @@ int main (int ac, char *av[])
 			return (print_error("invalid data\n"), 0);
 		data = set_data(av, ac);
 		// print_data(data);
+		// exit(10);
 		if (check_data(data))
 			return (ft_free_malloc(data->safe_malloc), print_error("invalid data\n"), 0);
 		philo(data);

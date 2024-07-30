@@ -6,6 +6,7 @@ void    go_eat(int t_id, int flag, t_data *data)
     {
         printf("%lu %d is eating\n", (get_current_time() - data->timestamp), t_id);
         usleep(data->time_to_eat);
+        data->philos[t_id].last_eat_time = get_current_time();
     }
 }
 void    go_think(int t_id, int flag, t_data *data)

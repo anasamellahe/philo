@@ -6,6 +6,7 @@ unsigned long ft_atol(char *str)
 	unsigned long nbr;
 
 	nbr = 0;
+	i  = 0;
 	if (!str)
 		return (-1);
 	i = (str[i] == '+');

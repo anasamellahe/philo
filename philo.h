@@ -30,6 +30,7 @@ typedef struct s_data
 {
 	bool		flag;
 	int			id;
+	pthread_mutex_t		data_lock;
 	unsigned long		timestamp;
 	unsigned long 		num_of_philo;
 	unsigned long 		time_to_die;
